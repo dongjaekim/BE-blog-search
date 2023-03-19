@@ -29,9 +29,11 @@ logging:
 search:
   source:
     kakao:
-      request-url: https://dapi.kakao.com/v2/search/blog
+      host: https://dapi.kakao.com
+      path: /v2/search/blog
       rest-api-key: KakaoAK 4c3d679ec3eead40fcb2c1034acff8d4
     naver:
-      request-url: https://openapi.naver.com/v1/search/blog.json
+      host: https://openapi.naver.com
+      path: /v1/search/blog.json
       client-id: 76zgl1YhduNgdA4zKGQR
       client-secret: u1WlQdXYSX
