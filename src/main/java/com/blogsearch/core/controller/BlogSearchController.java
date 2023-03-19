@@ -1,14 +1,14 @@
 package com.blogsearch.core.controller;
 
-import com.blogsearch.core.dto.KeywordDetailDto;
-import com.blogsearch.core.dto.BlogSearchDetailDto;
+import com.blogsearch.core.dto.KeywordDetailDTO;
+import com.blogsearch.core.dto.BlogSearchDetailDTO;
+import com.blogsearch.core.service.BlogSearchService;
+import com.blogsearch.core.service.KeywordMetaService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -18,13 +18,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BlogSearchController {
 
+    private final BlogSearchService blogSearchService;
+    private final KeywordMetaService keywordService;
+
     @GetMapping("/blogs")
-    public ResponseEntity<Page<BlogSearchDetailDto>> getBlogSearchResults() {
-        return ResponseEntity.of(null);
+    public ResponseEntity<BlogSearchDetailDTO> getBlogSearchResults(
+            @RequestParam String keyword,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false) String sort
+    ) throws InterruptedException {
+        return ResponseEntity.ok(blogSearchService.getSearchResults(keyword, page, size, sort));
     }
 
     @GetMapping("/keywords")
-    public ResponseEntity<List<KeywordDetailDto>> getHotKeywords() {
-        return ResponseEntity.of(null);
+    public ResponseEntity<List<KeywordDetailDTO>> getHotKeywords() {
+        return ResponseEntity.ok(keywordService.getHotKeywords());
     }
 }

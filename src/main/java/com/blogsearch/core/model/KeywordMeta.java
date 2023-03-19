@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Keyword extends BaseTimeEntity {
+public class KeywordMeta extends BaseTimeEntity {
 
     @Id
     @GeneratedValue
@@ -24,7 +24,7 @@ public class Keyword extends BaseTimeEntity {
 
     @NotNull
     @Builder.Default
-    private Long searchCount = 1L;
+    private Long searchCount = 0L;
 
     public void increaseSearchCount() {
         this.searchCount++;
