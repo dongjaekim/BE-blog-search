@@ -1,6 +1,5 @@
 package com.blogsearch.core.service.external;
 
-import com.blogsearch.core.dto.BlogSearchDetailDTO;
 import com.blogsearch.core.dto.external.KakaoBlogSearchDetailDTO;
 import com.blogsearch.core.utils.mapper.SearchDetailMapper;
 import lombok.RequiredArgsConstructor;
@@ -9,13 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import java.time.Duration;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicReference;
+import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
-public class KakaoSearchService implements ExternalSearchService {
+public class KakaoApiClient implements ExternalApiClient {
 
     private final WebClient webClient;
     private final SearchDetailMapper searchDetailMapper = SearchDetailMapper.INSTANCE;
@@ -30,11 +26,11 @@ public class KakaoSearchService implements ExternalSearchService {
     private String apiKey;
 
     @Override
-    public BlogSearchDetailDTO searchFromExternalSource(String keyword, Integer page, Integer size, String sort) throws InterruptedException {
-        CountDownLatch cdl = new CountDownLatch(1);
+    public Mono<KakaoBlogSearchDetailDTO> searchFromExternalSource(String keyword, Integer page, Integer size, String sort) throws InterruptedException {
+//        CountDownLatch cdl = new CountDownLatch(1);
 
-        AtomicReference<BlogSearchDetailDTO> output = new AtomicReference<>();
-        webClient.get()
+//        AtomicReference<BlogSearchDetailDTO> output = new AtomicReference<>();
+        return webClient.get()
                 .uri(host, uri -> uri
                         .path(path)
                         .queryParam("query", keyword)
@@ -47,11 +43,11 @@ public class KakaoSearchService implements ExternalSearchService {
                 .header("Authorization", apiKey)
                 .retrieve()
                 .onStatus(HttpStatus::is4xxClientError, ClientResponse::createException)
-                .bodyToMono(KakaoBlogSearchDetailDTO.class)
-                .timeout(Duration.ofMillis(1000))
-                .doOnTerminate(cdl::countDown)
-                .subscribe(response -> output.set(searchDetailMapper.toBlogSearchDetailDTO(response)));
-        cdl.await();
-        return output.get();
+                .bodyToMono(KakaoBlogSearchDetailDTO.class);
+//                .timeout(Duration.ofMillis(1000));
+//                .doOnTerminate(cdl::countDown)
+//                .subscribe(response -> output.set(searchDetailMapper.toBlogSearchDetailDTO(response)));
+//        cdl.await();
+//        return output.get();
     }
 }

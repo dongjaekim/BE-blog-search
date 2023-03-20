@@ -1,8 +1,7 @@
 package com.blogsearch.core.global.config;
 
-import com.blogsearch.core.service.external.ExternalSearchService;
-import com.blogsearch.core.service.external.KakaoSearchService;
-import com.blogsearch.core.service.external.NaverSearchService;
+import com.blogsearch.core.service.external.ExternalApiClient;
+import com.blogsearch.core.service.external.KakaoApiClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
@@ -22,8 +21,8 @@ public class WebClientConfig {
     }
 
     @Bean
-    public ExternalSearchService externalSearchService() {
-//        return new KakaoSearchService(webClient());
-        return new NaverSearchService(webClient());
+    public ExternalApiClient externalSearchService() {
+        return new KakaoApiClient(webClient());
+//        return new NaverSearchService(webClient());
     }
 }

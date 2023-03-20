@@ -1,19 +1,22 @@
 package com.blogsearch.core.service;
 
-import com.blogsearch.core.dto.BlogSearchDetailDTO;
-import com.blogsearch.core.service.external.ExternalSearchService;
+import com.blogsearch.core.dto.external.KakaoBlogSearchDetailDTO;
+import com.blogsearch.core.service.external.ExternalApiClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class BlogSearchService {
 
     private final KeywordMetaService keywordService;
-    private final ExternalSearchService externalSearchService;
+    private final ExternalApiClient externalSearchService;
 
-    public BlogSearchDetailDTO getSearchResults(String keyword, Integer page, Integer size, String sort) throws InterruptedException {
-        BlogSearchDetailDTO output = externalSearchService.searchFromExternalSource(keyword, page, size, sort);
+    public Mono<KakaoBlogSearchDetailDTO> getSearchResults(String keyword, Integer page, Integer size, String sort) throws InterruptedException {
+        Mono<KakaoBlogSearchDetailDTO> output = externalSearchService.searchFromExternalSource(keyword, page, size, sort);
         keywordService.saveKeyword(keyword);
         return output;
     }

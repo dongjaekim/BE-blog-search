@@ -35,7 +35,7 @@ public class BlogSearchDetailDTO {
         private String contents;
 
         @Schema(description = "글 개시 시간")
-        private String datetime;
+        private LocalDateTime datetime;
 
         @Schema(description = "글 url")
         private String url;
