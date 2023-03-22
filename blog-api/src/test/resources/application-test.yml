@@ -1,0 +1,33 @@
+spring:
+  config:
+    import: classpath:/application-core.yml
+
+feign:
+  circuitbreaker:
+    enabled: true
+  client:
+    config:
+      kakao-api:
+        connectTimeout: 100
+        readTimeout: 200
+      naver-api:
+        connectTimeout: 200
+        readTimeout: 200
+
+resilience4j:
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 2s
+
+search:
+  source:
+    kakao:
+      host: https://dapi.kakao.com
+      path: /v2/search/blog
+      api-key: KakaoAK 4c3d679ec3eead40fcb2c1034acff8d4
+    naver:
+      host: https://openapi.naver.com
+      path: /v1/search/blog.json
+      client-id: 76zgl1YhduNgdA4zKGQR
+      client-secret: u1WlQdXYSX

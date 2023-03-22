@@ -3,6 +3,7 @@ package com.blogsearch.controller;
 import com.blogsearch.dto.BlogSearchDetailDTO;
 import com.blogsearch.dto.external.KakaoBlogSearchDetailDTO;
 import com.blogsearch.dto.external.NaverBlogSearchDetailDTO;
+import com.blogsearch.global.exception.BlogSearchException;
 import com.blogsearch.global.exception.BlogSearchExceptionHandler;
 import com.blogsearch.service.BlogSearchService;
 import com.blogsearch.utils.mapper.SearchDetailMapper;
@@ -18,10 +19,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -179,5 +182,86 @@ class BlogSearchControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 블로그_검색_잘못된_정렬값() throws Exception {
+        //given
+        String keyword = "kakao";
+        String sort = "date";
+        Integer page = 1;
+        Integer size = 1;
+
+        MultiValueMap<String, String> mockParams = new LinkedMultiValueMap<>();
+        mockParams.put("keyword", Collections.singletonList(keyword));
+        mockParams.put("sort", Collections.singletonList(sort));
+        mockParams.put("page", Collections.singletonList(String.valueOf(page)));
+        mockParams.put("size", Collections.singletonList(String.valueOf(size)));
+
+        //when, then
+        mockMvc.perform(
+                        get("/apis/v1/search/blogs")
+                                .params(mockParams)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(
+                        result -> assertTrue(result.getResolvedException().getClass().isAssignableFrom(ConstraintViolationException.class))
+                );
+    }
+
+    @Test
+    void 블로그_검색_잘못된_페이지값() throws Exception {
+        //given
+        String keyword = "kakao";
+        String sort = "accuracy";
+        Integer page = 55;
+        Integer size = 1;
+
+        MultiValueMap<String, String> mockParams = new LinkedMultiValueMap<>();
+        mockParams.put("keyword", Collections.singletonList(keyword));
+        mockParams.put("sort", Collections.singletonList(sort));
+        mockParams.put("page", Collections.singletonList(String.valueOf(page)));
+        mockParams.put("size", Collections.singletonList(String.valueOf(size)));
+
+        //when, then
+        mockMvc.perform(
+                        get("/apis/v1/search/blogs")
+                                .params(mockParams)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(
+                        result -> assertTrue(result.getResolvedException().getClass().isAssignableFrom(ConstraintViolationException.class))
+                );
+    }
+
+    @Test
+    void 블로그_검색_잘못된_사이즈값() throws Exception {
+        //given
+        String keyword = "kakao";
+        String sort = "accuracy";
+        Integer page = 5;
+        Integer size = 100;
+
+        MultiValueMap<String, String> mockParams = new LinkedMultiValueMap<>();
+        mockParams.put("keyword", Collections.singletonList(keyword));
+        mockParams.put("sort", Collections.singletonList(sort));
+        mockParams.put("page", Collections.singletonList(String.valueOf(page)));
+        mockParams.put("size", Collections.singletonList(String.valueOf(size)));
+
+        //when, then
+        mockMvc.perform(
+                        get("/apis/v1/search/blogs")
+                                .params(mockParams)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(
+                        result -> assertTrue(result.getResolvedException().getClass().isAssignableFrom(ConstraintViolationException.class))
+                );
     }
 }
