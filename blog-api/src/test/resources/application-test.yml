@@ -12,7 +12,13 @@ feign:
         readTimeout: 200
       naver-api:
         connectTimeout: 200
-        readTimeout: 300
+        readTimeout: 200
+
+resilience4j:
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 2s
 
 search:
   source:

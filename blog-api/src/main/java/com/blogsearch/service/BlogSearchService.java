@@ -1,7 +1,6 @@
 package com.blogsearch.service;
 
-import com.blogsearch.core.dto.KeywordCreateDTO;
-import com.blogsearch.core.service.KeywordMetaService;
+import com.blogsearch.core.dto.KeywordMetaCreateDTO;
 import com.blogsearch.dto.BlogSearchDetailDTO;
 import com.blogsearch.service.external.ExternalBlogSearchService;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +34,7 @@ public class BlogSearchService {
             }
         }
 
-        applicationEventPublisher.publishEvent(KeywordCreateDTO.builder()
+        applicationEventPublisher.publishEvent(KeywordMetaCreateDTO.builder()
                 .keyword(keyword)
                 .build()
         );

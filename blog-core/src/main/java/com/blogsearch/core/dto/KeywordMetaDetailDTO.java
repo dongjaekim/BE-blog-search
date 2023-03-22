@@ -7,8 +7,14 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class KeywordCreateDTO {
+public class KeywordMetaDetailDTO {
+
+    @Schema(description = "키워드 id")
+    private Long id;
 
     @Schema(description = "키워드")
     private String keyword;
+
+    @Schema(description = "검색 수")
+    private Long searchCount;
 }

@@ -1,7 +1,7 @@
 package com.blogsearch.core.service;
 
-import com.blogsearch.core.dto.KeywordCreateDTO;
-import com.blogsearch.core.dto.KeywordDetailDTO;
+import com.blogsearch.core.dto.KeywordMetaCreateDTO;
+import com.blogsearch.core.dto.KeywordMetaDetailDTO;
 import com.blogsearch.core.model.KeywordMeta;
 import com.blogsearch.core.repository.KeywordMetaRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +49,7 @@ class KeywordMetaServiceTest {
                 .willReturn(keywordMetaList);
 
         //when
-        List<KeywordDetailDTO> hotKeywordList = keywordMetaService.getHotKeywords();
+        List<KeywordMetaDetailDTO> hotKeywordList = keywordMetaService.getHotKeywords();
 
         //then
         assertThat(hotKeywordList.size()).isEqualTo(10);
@@ -62,7 +62,7 @@ class KeywordMetaServiceTest {
     void 새로운_키워드_저장() {
         //given
         String keyword = "new keyword";
-        KeywordCreateDTO keywordCreateDTO = KeywordCreateDTO.builder()
+        KeywordMetaCreateDTO keywordCreateDTO = KeywordMetaCreateDTO.builder()
                 .keyword(keyword)
                 .build();
         KeywordMeta keywordMeta = KeywordMeta.builder()
@@ -77,7 +77,7 @@ class KeywordMetaServiceTest {
                 .willReturn(keywordMeta);
 
         //when
-        KeywordDetailDTO keywordDetailDTO = keywordMetaService.saveKeyword(keywordCreateDTO);
+        KeywordMetaDetailDTO keywordDetailDTO = keywordMetaService.saveKeyword(keywordCreateDTO);
 
         //then
         assertThat(keywordDetailDTO.getId()).isEqualTo(keywordMeta.getId());
@@ -90,7 +90,7 @@ class KeywordMetaServiceTest {
     void 기존_키워드_저장() {
         //given
         String keyword = "test1";
-        KeywordCreateDTO keywordCreateDTO = KeywordCreateDTO.builder()
+        KeywordMetaCreateDTO keywordCreateDTO = KeywordMetaCreateDTO.builder()
                 .keyword(keyword)
                 .build();
         KeywordMeta keywordMeta = KeywordMeta.builder()
@@ -105,7 +105,7 @@ class KeywordMetaServiceTest {
                 .willReturn(keywordMeta);
 
         //when
-        KeywordDetailDTO keywordDetailDTO = keywordMetaService.saveKeyword(keywordCreateDTO);
+        KeywordMetaDetailDTO keywordDetailDTO = keywordMetaService.saveKeyword(keywordCreateDTO);
 
         //then
         assertThat(keywordDetailDTO.getId()).isEqualTo(keywordMeta.getId());

@@ -1,10 +1,9 @@
 package com.blogsearch.controller;
 
-import com.blogsearch.core.dto.KeywordDetailDTO;
-import com.blogsearch.core.service.KeywordMetaService;
 import com.blogsearch.dto.BlogSearchDetailDTO;
 import com.blogsearch.dto.external.KakaoBlogSearchDetailDTO;
 import com.blogsearch.dto.external.NaverBlogSearchDetailDTO;
+import com.blogsearch.global.exception.BlogSearchException;
 import com.blogsearch.global.exception.BlogSearchExceptionHandler;
 import com.blogsearch.service.BlogSearchService;
 import com.blogsearch.utils.mapper.SearchDetailMapper;
@@ -20,11 +19,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -45,9 +45,6 @@ class BlogSearchControllerTest {
 
     @MockBean
     private BlogSearchService blogSearchService;
-
-    @MockBean
-    private KeywordMetaService keywordMetaService;
 
     private final SearchDetailMapper searchDetailMapper = SearchDetailMapper.INSTANCE;
     private KakaoBlogSearchDetailDTO kakaoBlogSearchDetailDTO;
@@ -108,8 +105,8 @@ class BlogSearchControllerTest {
         MultiValueMap<String, String> mockParams = new LinkedMultiValueMap<>();
         mockParams.put("keyword", Collections.singletonList(keyword));
         mockParams.put("sort", Collections.singletonList(sort));
-        mockParams.put("page", Collections.singletonList("1"));
-        mockParams.put("size", Collections.singletonList("1"));
+        mockParams.put("page", Collections.singletonList(String.valueOf(page)));
+        mockParams.put("size", Collections.singletonList(String.valueOf(size)));
 
         BlogSearchDetailDTO mockResponseDTO = searchDetailMapper.toBlogSearchDetailDTO(kakaoBlogSearchDetailDTO);
         given(blogSearchService.getSearchResults(anyString(), anyString(), anyInt(), anyInt()))
@@ -141,8 +138,8 @@ class BlogSearchControllerTest {
         MultiValueMap<String, String> mockParams = new LinkedMultiValueMap<>();
         mockParams.put("keyword", Collections.singletonList(keyword));
         mockParams.put("sort", Collections.singletonList(sort));
-        mockParams.put("page", Collections.singletonList("1"));
-        mockParams.put("size", Collections.singletonList("1"));
+        mockParams.put("page", Collections.singletonList(String.valueOf(page)));
+        mockParams.put("size", Collections.singletonList(String.valueOf(size)));
 
         BlogSearchDetailDTO mockResponseDTO = searchDetailMapper.toBlogSearchDetailDTO(naverBlogSearchDetailDTO);
         given(blogSearchService.getSearchResults(anyString(), anyString(), anyInt(), anyInt()))
@@ -174,8 +171,8 @@ class BlogSearchControllerTest {
         MultiValueMap<String, String> mockParams = new LinkedMultiValueMap<>();
         mockParams.put("keyword", Collections.singletonList(keyword));
         mockParams.put("sort", Collections.singletonList(sort));
-        mockParams.put("page", Collections.singletonList("1"));
-        mockParams.put("size", Collections.singletonList("1"));
+        mockParams.put("page", Collections.singletonList(String.valueOf(page)));
+        mockParams.put("size", Collections.singletonList(String.valueOf(size)));
 
         //when, then
         mockMvc.perform(
@@ -188,34 +185,83 @@ class BlogSearchControllerTest {
     }
 
     @Test
-    void 인기_검색어_조회() throws Exception {
+    void 블로그_검색_잘못된_정렬값() throws Exception {
         //given
-        List<KeywordDetailDTO> mockResponseDto = new ArrayList<>();
-        for (int i = 10; i >= 1; i--) {
-            mockResponseDto.add(
-                    KeywordDetailDTO.builder()
-                            .id((long) i)
-                            .keyword("test" + i)
-                            .searchCount(i * 10L)
-                            .build()
-            );
-        }
+        String keyword = "kakao";
+        String sort = "date";
+        Integer page = 1;
+        Integer size = 1;
 
-        given(keywordMetaService.getHotKeywords())
-                .willReturn(mockResponseDto);
+        MultiValueMap<String, String> mockParams = new LinkedMultiValueMap<>();
+        mockParams.put("keyword", Collections.singletonList(keyword));
+        mockParams.put("sort", Collections.singletonList(sort));
+        mockParams.put("page", Collections.singletonList(String.valueOf(page)));
+        mockParams.put("size", Collections.singletonList(String.valueOf(size)));
 
         //when, then
         mockMvc.perform(
-                        get("/apis/v1/search/hot-keywords")
+                        get("/apis/v1/search/blogs")
+                                .params(mockParams)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0]['searchCount']").value(100))
-                .andExpect(jsonPath("$[5]['searchCount']").value(50))
-                .andExpect(jsonPath("$[9]['searchCount']").value(10));
-
-        then(keywordMetaService).should(times(1)).getHotKeywords();
+                .andExpect(status().isBadRequest())
+                .andExpect(
+                        result -> assertTrue(result.getResolvedException().getClass().isAssignableFrom(ConstraintViolationException.class))
+                );
     }
 
+    @Test
+    void 블로그_검색_잘못된_페이지값() throws Exception {
+        //given
+        String keyword = "kakao";
+        String sort = "accuracy";
+        Integer page = 55;
+        Integer size = 1;
+
+        MultiValueMap<String, String> mockParams = new LinkedMultiValueMap<>();
+        mockParams.put("keyword", Collections.singletonList(keyword));
+        mockParams.put("sort", Collections.singletonList(sort));
+        mockParams.put("page", Collections.singletonList(String.valueOf(page)));
+        mockParams.put("size", Collections.singletonList(String.valueOf(size)));
+
+        //when, then
+        mockMvc.perform(
+                        get("/apis/v1/search/blogs")
+                                .params(mockParams)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(
+                        result -> assertTrue(result.getResolvedException().getClass().isAssignableFrom(ConstraintViolationException.class))
+                );
+    }
+
+    @Test
+    void 블로그_검색_잘못된_사이즈값() throws Exception {
+        //given
+        String keyword = "kakao";
+        String sort = "accuracy";
+        Integer page = 5;
+        Integer size = 100;
+
+        MultiValueMap<String, String> mockParams = new LinkedMultiValueMap<>();
+        mockParams.put("keyword", Collections.singletonList(keyword));
+        mockParams.put("sort", Collections.singletonList(sort));
+        mockParams.put("page", Collections.singletonList(String.valueOf(page)));
+        mockParams.put("size", Collections.singletonList(String.valueOf(size)));
+
+        //when, then
+        mockMvc.perform(
+                        get("/apis/v1/search/blogs")
+                                .params(mockParams)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(
+                        result -> assertTrue(result.getResolvedException().getClass().isAssignableFrom(ConstraintViolationException.class))
+                );
+    }
 }
