@@ -17,6 +17,8 @@ jar 파일 실행 및 아래 링크에서 스웨거를 통해 API 명세를 확�
 - Gradle 7.6.1
 - blog-api, blog-core 멀티모듈 구성
 - H2 메모리 DB 사용
+- 카카오 API connectTimeout = 100ms, readTimeout = 300ms
+- 네이버 API connectTimeout = 200ms, readTimeout = 600ms
 
 ## 외부 라이브러리 목록
 ### Lombok
