@@ -8,11 +8,11 @@ feign:
   client:
     config:
       kakao-api:
-        connectTimeout: 30
-        readTimeout: 50
+        connectTimeout: 100
+        readTimeout: 200
       naver-api:
         connectTimeout: 200
-        readTimeout: 200
+        readTimeout: 300
 
 search:
   source:

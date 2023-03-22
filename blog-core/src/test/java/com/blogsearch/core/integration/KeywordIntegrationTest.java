@@ -1,12 +1,14 @@
 package com.blogsearch.core.integration;
 
-import com.blogsearch.core.dto.KeywordCreateDTO;
-import com.blogsearch.core.dto.KeywordDetailDTO;
+import com.blogsearch.core.controller.KeywordMetaController;
+import com.blogsearch.core.dto.KeywordMetaCreateDTO;
+import com.blogsearch.core.dto.KeywordMetaDetailDTO;
 import com.blogsearch.core.service.KeywordMetaService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -19,14 +21,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @ActiveProfiles("core-test")
 public class KeywordIntegrationTest {
-    
+
+    @Autowired
+    KeywordMetaController keywordMetaController;
+
     @Autowired
     KeywordMetaService keywordMetaService;
 
     @BeforeEach
     void setUp() {
-        KeywordCreateDTO keywordCreateDTO = KeywordCreateDTO.builder().keyword("test5").build();
+        KeywordMetaCreateDTO keywordCreateDTO = KeywordMetaCreateDTO.builder().keyword("test5").build();
         keywordMetaService.saveKeyword(keywordCreateDTO);
+    }
+
+    @Test
+    void 인기_검색어_조회() {
+        //given
+
+        //when
+        ResponseEntity<List<KeywordMetaDetailDTO>> hotKeywords = keywordMetaController.getHotKeywords();
+
+        //then
+        assertThat(hotKeywords.getStatusCode().is2xxSuccessful()).isTrue();
+        assertThat(hotKeywords.getBody().size()).isEqualTo(1);
     }
 
     @Test
@@ -34,7 +51,7 @@ public class KeywordIntegrationTest {
         //given
         ExecutorService executorService = Executors.newFixedThreadPool(10);
         CountDownLatch countDownLatch = new CountDownLatch(10);
-        KeywordCreateDTO keywordCreateDTO = KeywordCreateDTO.builder().keyword("test5").build();
+        KeywordMetaCreateDTO keywordCreateDTO = KeywordMetaCreateDTO.builder().keyword("test5").build();
 
         //when
         long start = System.currentTimeMillis();
@@ -53,7 +70,7 @@ public class KeywordIntegrationTest {
         long end = System.currentTimeMillis();
 
         System.out.println("total elapsed time = " + (end - start));
-        List<KeywordDetailDTO> hotKeywords = keywordMetaService.getHotKeywords();
+        List<KeywordMetaDetailDTO> hotKeywords = keywordMetaService.getHotKeywords();
         assertThat(hotKeywords).extracting("searchCount").containsExactly(11L);
     }
 }

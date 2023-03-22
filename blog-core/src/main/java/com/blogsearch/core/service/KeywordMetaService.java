@@ -1,8 +1,8 @@
 package com.blogsearch.core.service;
 
-import com.blogsearch.core.dto.KeywordCreateDTO;
-import com.blogsearch.core.dto.KeywordDetailDTO;
-import com.blogsearch.core.utils.mapper.KeywordMapper;
+import com.blogsearch.core.dto.KeywordMetaCreateDTO;
+import com.blogsearch.core.dto.KeywordMetaDetailDTO;
+import com.blogsearch.core.utils.mapper.KeywordMetaMapper;
 import com.blogsearch.core.model.KeywordMeta;
 import com.blogsearch.core.repository.KeywordMetaRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,15 +18,15 @@ import java.util.List;
 public class KeywordMetaService {
 
     private final KeywordMetaRepository keywordRepository;
-    private final KeywordMapper keywordMapper = KeywordMapper.INSTANCE;
+    private final KeywordMetaMapper keywordMapper = KeywordMetaMapper.INSTANCE;
 
-    public List<KeywordDetailDTO> getHotKeywords() {
+    public List<KeywordMetaDetailDTO> getHotKeywords() {
         return keywordMapper.toDtoList(keywordRepository.findTop10ByOrderBySearchCountDesc());
     }
 
     @EventListener
     @Transactional
-    public KeywordDetailDTO saveKeyword(KeywordCreateDTO keywordCreateDTO) {
+    public KeywordMetaDetailDTO saveKeyword(KeywordMetaCreateDTO keywordCreateDTO) {
         KeywordMeta keywordMeta = keywordRepository.findByKeyword(keywordCreateDTO.getKeyword())
                 .orElse(KeywordMeta
                         .builder()

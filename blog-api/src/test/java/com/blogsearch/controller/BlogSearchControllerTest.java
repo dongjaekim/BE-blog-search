@@ -1,7 +1,5 @@
 package com.blogsearch.controller;
 
-import com.blogsearch.core.dto.KeywordDetailDTO;
-import com.blogsearch.core.service.KeywordMetaService;
 import com.blogsearch.dto.BlogSearchDetailDTO;
 import com.blogsearch.dto.external.KakaoBlogSearchDetailDTO;
 import com.blogsearch.dto.external.NaverBlogSearchDetailDTO;
@@ -21,7 +19,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -45,9 +42,6 @@ class BlogSearchControllerTest {
 
     @MockBean
     private BlogSearchService blogSearchService;
-
-    @MockBean
-    private KeywordMetaService keywordMetaService;
 
     private final SearchDetailMapper searchDetailMapper = SearchDetailMapper.INSTANCE;
     private KakaoBlogSearchDetailDTO kakaoBlogSearchDetailDTO;
@@ -108,8 +102,8 @@ class BlogSearchControllerTest {
         MultiValueMap<String, String> mockParams = new LinkedMultiValueMap<>();
         mockParams.put("keyword", Collections.singletonList(keyword));
         mockParams.put("sort", Collections.singletonList(sort));
-        mockParams.put("page", Collections.singletonList("1"));
-        mockParams.put("size", Collections.singletonList("1"));
+        mockParams.put("page", Collections.singletonList(String.valueOf(page)));
+        mockParams.put("size", Collections.singletonList(String.valueOf(size)));
 
         BlogSearchDetailDTO mockResponseDTO = searchDetailMapper.toBlogSearchDetailDTO(kakaoBlogSearchDetailDTO);
         given(blogSearchService.getSearchResults(anyString(), anyString(), anyInt(), anyInt()))
@@ -141,8 +135,8 @@ class BlogSearchControllerTest {
         MultiValueMap<String, String> mockParams = new LinkedMultiValueMap<>();
         mockParams.put("keyword", Collections.singletonList(keyword));
         mockParams.put("sort", Collections.singletonList(sort));
-        mockParams.put("page", Collections.singletonList("1"));
-        mockParams.put("size", Collections.singletonList("1"));
+        mockParams.put("page", Collections.singletonList(String.valueOf(page)));
+        mockParams.put("size", Collections.singletonList(String.valueOf(size)));
 
         BlogSearchDetailDTO mockResponseDTO = searchDetailMapper.toBlogSearchDetailDTO(naverBlogSearchDetailDTO);
         given(blogSearchService.getSearchResults(anyString(), anyString(), anyInt(), anyInt()))
@@ -174,8 +168,8 @@ class BlogSearchControllerTest {
         MultiValueMap<String, String> mockParams = new LinkedMultiValueMap<>();
         mockParams.put("keyword", Collections.singletonList(keyword));
         mockParams.put("sort", Collections.singletonList(sort));
-        mockParams.put("page", Collections.singletonList("1"));
-        mockParams.put("size", Collections.singletonList("1"));
+        mockParams.put("page", Collections.singletonList(String.valueOf(page)));
+        mockParams.put("size", Collections.singletonList(String.valueOf(size)));
 
         //when, then
         mockMvc.perform(
@@ -186,36 +180,4 @@ class BlogSearchControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
-
-    @Test
-    void 인기_검색어_조회() throws Exception {
-        //given
-        List<KeywordDetailDTO> mockResponseDto = new ArrayList<>();
-        for (int i = 10; i >= 1; i--) {
-            mockResponseDto.add(
-                    KeywordDetailDTO.builder()
-                            .id((long) i)
-                            .keyword("test" + i)
-                            .searchCount(i * 10L)
-                            .build()
-            );
-        }
-
-        given(keywordMetaService.getHotKeywords())
-                .willReturn(mockResponseDto);
-
-        //when, then
-        mockMvc.perform(
-                        get("/apis/v1/search/hot-keywords")
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0]['searchCount']").value(100))
-                .andExpect(jsonPath("$[5]['searchCount']").value(50))
-                .andExpect(jsonPath("$[9]['searchCount']").value(10));
-
-        then(keywordMetaService).should(times(1)).getHotKeywords();
-    }
-
 }

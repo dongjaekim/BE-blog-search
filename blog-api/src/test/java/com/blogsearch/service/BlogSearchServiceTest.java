@@ -1,6 +1,6 @@
 package com.blogsearch.service;
 
-import com.blogsearch.core.dto.KeywordCreateDTO;
+import com.blogsearch.core.dto.KeywordMetaCreateDTO;
 import com.blogsearch.dto.BlogSearchDetailDTO;
 import com.blogsearch.dto.external.KakaoBlogSearchDetailDTO;
 import com.blogsearch.dto.external.NaverBlogSearchDetailDTO;
@@ -113,7 +113,7 @@ class BlogSearchServiceTest {
         assertThat(searchResults.getBlogPosts()).extracting("blogname").containsExactly(kakaoBlogSearchDetailDTO.getDocuments().get(0).getBlogname());
         assertThat(searchResults.getBlogPosts()).extracting("contents").containsExactly(kakaoBlogSearchDetailDTO.getDocuments().get(0).getContents());
         then(kakaoBlogSearchService).should(times(1)).searchFromExternalSource(anyString(), anyString(), anyInt(), anyInt());
-        then(applicationEventPublisher).should(times(1)).publishEvent(any(KeywordCreateDTO.class));
+        then(applicationEventPublisher).should(times(1)).publishEvent(any(KeywordMetaCreateDTO.class));
     }
 
     @Test
@@ -138,7 +138,7 @@ class BlogSearchServiceTest {
         assertThat(searchResults.getBlogPosts()).extracting("contents").containsExactly(naverBlogSearchDetailDTO.getItems().get(0).getDescription());
         then(kakaoBlogSearchService).should(times(1)).searchFromExternalSource(anyString(), anyString(), anyInt(), anyInt());
         then(naverBlogSearchService).should(times(1)).searchFromExternalSource(anyString(), anyString(), anyInt(), anyInt());
-        then(applicationEventPublisher).should(times(1)).publishEvent(any(KeywordCreateDTO.class));
+        then(applicationEventPublisher).should(times(1)).publishEvent(any(KeywordMetaCreateDTO.class));
     }
 
     @Test
@@ -161,7 +161,7 @@ class BlogSearchServiceTest {
                 .isInstanceOf(BlogSearchException.class);
         then(kakaoBlogSearchService).should(times(1)).searchFromExternalSource(anyString(), anyString(), anyInt(), anyInt());
         then(naverBlogSearchService).should(times(1)).searchFromExternalSource(anyString(), anyString(), anyInt(), anyInt());
-        then(applicationEventPublisher).should(times(0)).publishEvent(any(KeywordCreateDTO.class));
+        then(applicationEventPublisher).should(times(0)).publishEvent(any(KeywordMetaCreateDTO.class));
     }
 
 }
