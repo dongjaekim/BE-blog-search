@@ -3,7 +3,7 @@ dependencies {
     //openfeign
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
-    testImplementation 'com.github.tomakehurst:wiremock:2.27.2'
+    testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
 }
 
 dependencyManagement {
